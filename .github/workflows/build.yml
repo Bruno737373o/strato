@@ -7,24 +7,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # Atualizado para v4
+      - uses: actions/checkout@v4
         with:
-          submodules: recursive 
+          submodules: false # Desativamos o download automático aqui para corrigir o link antes
+
+      - name: Fix Sirit Repository URL
+        run: |
+          sed -i 's|https://github.com/yuzu-emu/sirit|https://github.com/strato-emu/sirit|g' .gitmodules
+          git submodule update --init --recursive
 
       - name: set up JDK 17
-        uses: actions/setup-java@v4 # Atualizado para v4
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3 # Atualizado para v3
+        uses: android-actions/setup-android@v3
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4 # Atualizado para v4
+        uses: actions/upload-artifact@v4
         with:
           name: strato-debug-apk
           path: app/build/outputs/apk/debug/*.apk
