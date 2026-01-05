@@ -1,31 +1,30 @@
 name: Build Strato APK
 
 on:
-  workflow_dispatch: # Permite que você inicie o build manualmente
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4 # Atualizado para v4
         with:
-          submodules: recursive # Importante: Strato usa submódulos
+          submodules: recursive 
 
       - name: set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4 # Atualizado para v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3 # Atualizado para v3
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # Atualizado para v4
         with:
           name: strato-debug-apk
           path: app/build/outputs/apk/debug/*.apk
-          
