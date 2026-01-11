@@ -1,4 +1,4 @@
-name: Build Strato APK
+name: Build Strato APK (Android 16 Support)
 
 on:
   workflow_dispatch: 
@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: false # Desativamos o download automático aqui para corrigir o link antes
+          submodules: false 
 
       - name: Fix Sirit Repository URL
         run: |
@@ -22,20 +22,23 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK 16
         uses: android-actions/setup-android@v3
+        with:
+          api-level: 36 # Suporte específico para Android 16
+          build-tools: 36.0.0
 
-      - name: Build with Gradle
-        run: ./gradlew assembleDebug
+      - name: Force Target Android 16
+        run: |
+          # Este comando força o Gradle a compilar visando o Android 16
+          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion.*/targetSdkVersion 36/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion.*/compileSdkVersion 36/g' {} +
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: List Files (Para Debug)
-        run: find . -name "*.apk"
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: strato-debug-apk
-          path: "**/build/outputs/apk/**/*.apk" # Busca em qualquer subpasta
+          name: strato-android16-galaxyA36
+          path: "**/build/outputs/apk/**/*.apk"
